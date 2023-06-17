@@ -13,8 +13,8 @@ env.reset()
 
 c_learning_rate = 0.1
 c_discount_value = 0.9
-c_no_of_eps = 10000
-c_show_each = 1000
+c_no_of_eps = 600000
+c_show_each = 10000
 
 
 v_epsilon = 0.9
@@ -40,13 +40,19 @@ max_ep_reward = -999
 max_ep_action_list = []
 max_start_state = None
 
-ep, ep_rewards = [], []
+# ep, ep_rewards = [], []
+ep_reward_list=[]
+ep_list=[]
 
 for ep in range(c_no_of_eps):
+    ep_list.append(ep)
     print("Eps = ", ep)
     done = False
     current_state = convert_state(env.reset())
     ep_reward = 0
+
+
+
     ep_start_state = current_state
     action_list = []
 
@@ -66,7 +72,8 @@ for ep in range(c_no_of_eps):
 
         # Hành động theo action đã lấy
         next_real_state, reward, done, _  = env.step(action=action)
-        ep_reward += reward
+        ep_reward += reward 
+
 
         if show_now:
             env.render()
@@ -79,9 +86,9 @@ for ep in range(c_no_of_eps):
                     max_ep_reward = ep_reward
                     max_ep_action_list = action_list
                     max_start_state  = ep_start_state
-                    with open("q_table.pkl","wb") as f:
-                        pickle.dump(q_table,f)
-                        
+                    # with open("q_table.pkl","wb") as f:
+                    #     pickle.dump(q_table,f)
+                       
 
         else:
             # Convert về q_state
@@ -98,11 +105,15 @@ for ep in range(c_no_of_eps):
     if c_end_ep_epsilon_decay >= ep > c_start_ep_epsilon_decay:
         v_epsilon = v_epsilon - v_epsilon_decay
 
+    
+    ep_reward_list.append(ep_reward)
+
+pylab.plot(ep_list, ep_reward_list, 'b')
+pylab.savefig("app_eps_10000.png")
 
 # pylab.plot(ep, ep_reward, 'b')
 # pylab.savefig("app_eps_10000.png")
 # np.save("app_q_table", arr=q_table)
-
 # print("Max reward = ", max_ep_reward)
 # print("Max action list = ", max_ep_action_list)
 
